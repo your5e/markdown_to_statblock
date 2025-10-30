@@ -64,7 +64,6 @@ function generate_yaml(monster) {
     let yaml = '';
 
     if (monster.name) yaml += `name: ${monster.name}\n`;
-    if (monster.source) yaml += `source: "${monster.source}"\n`;
     if (monster.size) yaml += `size: ${monster.size}\n`;
     if (monster.type) yaml += `type: ${monster.type}\n`;
     if (monster.subtype) yaml += `subtype: ${monster.subtype}\n`;
@@ -91,7 +90,7 @@ function generate_yaml(monster) {
         yaml += `condition_immunities: ${monster.condition_immunities}\n`;
     }
     if (monster.senses) yaml += `senses: ${monster.senses}\n`;
-    if (monster.languages && monster.languages !== '—') {
+    if (monster.languages && monster.languages !== '—' && monster.languages !== 'None') {
         yaml += `languages: ${monster.languages}\n`;
     }
     if (monster.cr) yaml += `cr: "${monster.cr}"\n`;

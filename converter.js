@@ -52,6 +52,9 @@ function convert_markdown_to_yaml(markdown) {
 
 function process_wikilinks(text) {
     return text.replace(/\[\[([^\]]+)\]\]/g, (_, content) => {
+        if (content.includes('|')) {
+            content = content.split('|')[1];
+        }
         const words = content.split(' ');
         if (words.length === 1) {
             return content.toLowerCase();
@@ -74,16 +77,16 @@ function parse_list_item(key, value, monster) {
         monster.speed = value;
     } else if (key === 'Skills') {
         monster.skillsaves = parse_skills(value);
-    } else if (key === 'Damage Resistances') {
-        monster.damage_resistances = value;
-    } else if (key === 'Damage Immunities') {
-        monster.damage_immunities = value;
+    } else if (key === 'Damage Resistances' || key === 'Resistances') {
+        monster.damage_resistances = value.toLowerCase();
+    } else if (key === 'Damage Immunities' || key === 'Immunities') {
+        monster.damage_immunities = value.toLowerCase();
     } else if (key === 'Condition Immunities') {
         monster.condition_immunities = value;
     } else if (key === 'Senses') {
-        monster.senses = value;
+        monster.senses = value.replace(/;/g, ',');
     } else if (key === 'Languages') {
-        monster.languages = value;
+        monster.languages = value.replace(/;/g, ',');
     } else if (key === 'Challenge') {
         const cr_match = value.match(/^([^\s(]+)/);
         if (cr_match) monster.cr = cr_match[1];
@@ -128,7 +131,11 @@ function collect_multi_line_entry(lines, start_index, current_section) {
 
     while (j < lines.length) {
         const next_line = lines[j].trim();
-        if (next_line.startsWith('##') || next_line.startsWith('_**')) {
+        if (
+            next_line.startsWith('##') ||
+            next_line.startsWith('_**') ||
+            next_line.startsWith('***')
+        ) {
             break;
         }
         if (
@@ -186,10 +193,34 @@ function join_text_parts(parts) {
     return result;
 }
 
+function filter_checkbox_blocks(lines) {
+    const filtered = [];
+    let i = 0;
+    while (i < lines.length) {
+        const line = lines[i].trim();
+        if (line.startsWith('[!checks')) {
+            i++;
+            while (
+                i < lines.length &&
+                (
+                    lines[i].trim() === '-' ||
+                    lines[i].trim().startsWith('- [ ]')
+                )
+            ) {
+                i++;
+            }
+        } else {
+            filtered.push(lines[i]);
+            i++;
+        }
+    }
+    return filtered;
+}
+
 function parse_markdown(markdown) {
-    const lines = markdown.split('\n').map(line => line.replace(/^>\s?/, ''));
+    let lines = markdown.split('\n').map(line => line.replace(/^>\s?/, ''));
+    lines = filter_checkbox_blocks(lines);
     const monster = {
-        source: '5e SRD',
         bestiary: true
     };
 
@@ -203,14 +234,41 @@ function parse_markdown(markdown) {
             monster.name = line.substring(2).trim();
         }
 
-        else if (line.match(/^_.*_$/)) {
+        else if (line.match(/^[*_].*[*_]$/) && !current_section) {
             const text = line.substring(1, line.length - 1);
             const match = text.match(/^(\w+)\s+(\w+)\s*(?:\(([^)]+)\))?,?\s*(.+)$/);
             if (match) {
                 monster.size = match[1];
-                monster.type = match[2];
+                monster.type = match[2].toLowerCase();
                 monster.subtype = match[3] || '';
-                monster.alignment = match[4];
+                monster.alignment = match[4].toLowerCase();
+            }
+        }
+
+        else if (line.match(/^\*\*[A-Z]/) && !current_section) {
+            const match = line.match(/^\*\*([^*]+)\*\*\s+(.+)$/);
+            if (match) {
+                const key = match[1];
+                const value = process_wikilinks(match[2]);
+                if (key === 'AC') {
+                    parse_list_item('Armor Class', value, monster);
+                } else if (key === 'HP') {
+                    parse_list_item('Hit Points', value, monster);
+                } else if (key === 'Speed') {
+                    parse_list_item('Speed', value, monster);
+                } else if (key === 'Skills') {
+                    parse_list_item('Skills', value, monster);
+                } else if (key === 'Resistances') {
+                    parse_list_item('Resistances', value, monster);
+                } else if (key === 'Immunities') {
+                    parse_list_item('Immunities', value, monster);
+                } else if (key === 'Senses') {
+                    parse_list_item('Senses', value, monster);
+                } else if (key === 'Languages') {
+                    parse_list_item('Languages', value, monster);
+                } else if (key === 'CR') {
+                    parse_list_item('Challenge', value, monster);
+                }
             }
         }
 
@@ -293,8 +351,10 @@ function parse_markdown(markdown) {
             }
         }
 
-        else if (line.startsWith('## ')) {
-            current_section = line.substring(3).trim().toLowerCase();
+        else if (line.startsWith('### ') || line.startsWith('## ')) {
+            current_section = line.startsWith('### ')
+                ? line.substring(4).trim().toLowerCase()
+                : line.substring(3).trim().toLowerCase();
             if (current_section === 'traits') {
                 monster.traits = [];
             } else if (current_section === 'actions') {
@@ -306,14 +366,18 @@ function parse_markdown(markdown) {
             }
         }
 
-        else if (line.startsWith('_**') && current_section) {
+        else if (
+            (line.startsWith('_**') || line.startsWith('***')) &&
+            current_section
+        ) {
             const result = collect_multi_line_entry(lines, i, current_section);
             const entry = parse_ability_entry(result.fullText);
             if (entry) {
+                if (entry.name === 'Spellcasting') {
+                    monster.spells = parse_spellcasting(entry.desc);
+                }
                 if (current_section === 'traits') {
-                    if (entry.name === 'Spellcasting') {
-                        monster.spells = parse_spellcasting(entry.desc);
-                    } else {
+                    if (entry.name !== 'Spellcasting') {
                         monster.traits.push(entry);
                     }
                 } else if (current_section === 'actions') {
@@ -383,6 +447,9 @@ function parse_ability_entry(line) {
     if (!name_match) {
         name_match = line.match(/^_\*\*([^*]+)\.\*\*\s+([\s\S]+)$/);
     }
+    if (!name_match) {
+        name_match = line.match(/^\*\*\*([^*]+)\.\*\*\*\s*([\s\S]+)$/);
+    }
     if (!name_match) return null;
 
     const name = name_match[1];
@@ -391,7 +458,13 @@ function parse_ability_entry(line) {
     desc = desc.replace(/^_|_$/g, '');
     desc = desc.replace(/_\*\*([^*]+)\*\*_/g, '$1');
     desc = desc.replace(/_/g, '');
-    desc = desc.replace(/\[\[([^\]]+)\]\]/g, '$1');
+    desc = desc.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '$1');
+    desc = desc.replace(/\[\[([^\]]+)\]\]/g, (_, content) => {
+        if (content.includes('|')) {
+            return content.split('|')[1];
+        }
+        return content;
+    });
 
     return parse_ability_fields(name, desc);
 }
@@ -401,7 +474,12 @@ function parse_bullet_ability_entry(line) {
     if (!name_match) return null;
 
     let desc = name_match[2];
-    desc = desc.replace(/\[\[([^\]]+)\]\]/g, '$1');
+    desc = desc.replace(/\[\[([^\]]+)\]\]/g, (_, content) => {
+        if (content.includes('|')) {
+            return content.split('|')[1];
+        }
+        return content;
+    });
 
     return parse_ability_fields(name_match[1], desc);
 }
@@ -409,7 +487,10 @@ function parse_bullet_ability_entry(line) {
 function parse_ability_fields(name, desc) {
     const entry = { name, desc, attack_bonus: 0 };
 
-    const attack_match = desc.match(/([+-]\d+)\s+to\s+hit/);
+    let attack_match = desc.match(/Attack Roll:\s*([+-]\d+)/);
+    if (!attack_match) {
+        attack_match = desc.match(/([+-]\d+)\s+to\s+hit/);
+    }
     if (attack_match) {
         entry.attack_bonus = parseInt(attack_match[1]);
     }
@@ -433,7 +514,14 @@ function parse_spellcasting(desc) {
         .filter(line => line.length > 0)
         .map(line => {
             line = line.replace(/^-\s*/, '');
-            return line.replace(/\[\[([^\]]+)\]\]/g, '$1');
+            line = line.replace(/\*\*/g, '');
+            line = line.replace(/\s+/g, ' ');
+            return line.replace(/\[\[([^\]]+)\]\]/g, (_, content) => {
+                if (content.includes('|')) {
+                    return content.split('|')[1];
+                }
+                return content;
+            });
         });
 }
 
