@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>Markdown to YAML Statblock Converter</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+      padding: 10px;
+      gap: 10px;
+      box-sizing: border-box;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    #input,
+    .output {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .output-header {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+
+      button {
+        padding: 5px 10px;
+        font-family: monospace;
+        font-size: 14px;
+        cursor: pointer;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+    }
+
+    textarea {
+      flex: 1;
+      width: 100%;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      resize: none;
+    }
+  </style>
+  <script src='yaml_formatter.js'></script>
+  <script src='converter.js'></script>
+</head>
+<body>
+  <header>
+    <h1>Markdown to Fantasy Statblocks converter</h1>
+    <p>
+      Given a 5e Markdown file, convert it to the YAML format understdood by the Obsidian
+      <a href='https://plugins.javalent.com/statblocks'>Fantasy Statblocks</a> plugin.
+    </p>
+  </header>
+
+  <main>
+    <div id='input'>
+      <label for='markdown'>Markdown Input:</label>
+      <textarea id='markdown' placeholder='Paste markdown statblock here...'></textarea>
+    </div>
+
+    <div class='output'>
+      <div class='output-header'>
+        <label for='yaml'>YAML Output:</label>
+        <button id='copy-yaml'>Copy YAML to Clipboard</button>
+      </div>
+      <textarea id='yaml' readonly placeholder='YAML output will appear here...'></textarea>
+    </div>
+  </main>
+
+  <footer>
+    <a href='https://github.com/your5e/markdown_to_statblock'>source on GitHub</a>
+  </footer>
+</body>
+</html>
