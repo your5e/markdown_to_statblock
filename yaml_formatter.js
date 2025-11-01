@@ -39,7 +39,9 @@ function generate_abilities_yaml(key, abilities) {
     for (const ability of abilities) {
         yaml += `  - name: ${ability.name}\n`;
         yaml += `    desc: ${format_yaml_value(ability.desc)}\n`;
-        yaml += `    attack_bonus: ${ability.attack_bonus}\n`;
+        if (ability.attack_bonus !== 0) {
+            yaml += `    attack_bonus: ${ability.attack_bonus}\n`;
+        }
         if (ability.damage_dice) {
             yaml += `    damage_dice: "${ability.damage_dice}"\n`;
         }
@@ -98,6 +100,7 @@ function generate_yaml(monster) {
 
     yaml += generate_abilities_yaml('traits', monster.traits);
     yaml += generate_abilities_yaml('actions', monster.actions);
+    yaml += generate_abilities_yaml('bonus_actions', monster.bonus_actions);
     yaml += generate_abilities_yaml('reactions', monster.reactions);
     yaml += generate_abilities_yaml('legendary_actions', monster.legendary_actions);
     yaml += generate_spellcasting_yaml('spells', monster.spells);

@@ -1,0 +1,55 @@
+name: Wendigo
+size: Large
+type: monstrosity
+subtype: Cryptid
+alignment: chaotic evil
+ac: 14
+hp: 59
+hit_dice: "7d10 + 18"
+speed: "40 ft., climb 40 ft."
+stats: [20, 13, 16, 2, 8, 5]
+saves:
+  - constitution: 5
+skillsaves:
+  - perception: 5
+  - stealth: 5
+damage_resistances: lightning, cold, necrotic, poison
+damage_immunities: bludgeoning, piercing, and slashing; charmed, exhaustion, frightened, poisoned
+senses: Darkvision 120 ft., Passive Perception 15
+languages: Telepathy 240 ft., (cryptids only)
+cr: "1"
+bestiary: true
+traits:
+  - name: Legendary Resistance (1/Day)
+    desc: If the wendigo fails a saving throw, it can choose to succeed instead.
+  - name: Vocal Mimcry
+    desc: While invisible, the wendigo can reproduce any voice that listener has heard before.
+actions:
+  - name: Multiattack
+    desc: The Wendigo can make a two attacks, claw and bite, in any combination. Either attack can be replaced with a single gore or cannibalistic roar.
+  - name: Claw
+    desc: "Melee Attack Roll: +7 to hit, reach 5 ft., one target. Hit: 9 (1d10 + 4) piercing damage, and the wendigo can move the creature up to 15 feet, as long as it remains within 5 feet of the wendigo."
+    attack_bonus: 7
+    damage_dice: "1d10"
+    damage_bonus: 4
+  - name: Bite
+    desc: "Melee Attack Roll: +7 to hit, reach 5 ft., one target. Hit: 15 (2d10 + 4) piercing damage."
+    attack_bonus: 7
+    damage_dice: "2d10"
+    damage_bonus: 4
+  - name: Gore
+    desc: "Melee Attack Roll: +7 to hit, reach 5 ft., one target. Hit: 14 (2d10 + 4) piercing damage. If the wendigo moved at least 20 feet straight toward the target immediately before the hit, the target takes an extra 7 (2d6) bludgeoning damage and is prone."
+    attack_bonus: 7
+    damage_dice: "2d10"
+    damage_bonus: 4
+  - name: Cannibalistic Roar (Recharge 6)
+    desc: "Charisma Saving Throw: DC 10, each creature within a 30-foot emanation of the cryptid. Failure: The target is Charmed for 1 minute and while charmed the target attacks nearby allies using the Wendigo's Bite attack. At the end of the target's turn, it repeats the saving throw. Success: The target is immune to this effect for 24 hours."
+bonus_actions:
+  - name: Shadow Blend
+    desc: While in dim light or darkness, the cryptid becomes invisible, until the start of its next turn or until the cryptid is in bright light.
+  - name: Ill Omen (1/Day)
+    desc: "Wisdom Saving Throw: DC 15, each creature within a 60-foot emanation of the cryptid. Failure: The target has the frightened and repeats the save at the end of its next turn if it is still frightened, ending the effect on itself on a success. If the target failed by 5 or more it's stunned in addition to being frightened. Success: The target is immune to this gaze for the next 24 hours."
+reactions:
+  - name: Ephemeral
+    desc: "Trigger: The cryptid is takes damage from an attack while in Dim Light or Darkness. Response: The cryptid can reduce the damage by 11 (2d10) and teleports to a point it can see within 30 feet."
+    damage_dice: "2d10"

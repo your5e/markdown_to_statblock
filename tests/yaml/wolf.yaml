@@ -16,10 +16,8 @@ bestiary: true
 traits:
   - name: Keen Hearing and Smell
     desc: The wolf has advantage on Wisdom (Perception) checks that rely on hearing or smell.
-    attack_bonus: 0
   - name: Pack Tactics
     desc: The wolf has advantage on an attack roll against a creature if at least one of the wolf's allies is within 5 feet of the creature and the ally isn't incapacitated.
-    attack_bonus: 0
 actions:
   - name: Bite
     desc: "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 7 (2d4 + 2) piercing damage. If the target is a creature, it must succeed on a DC 11 Strength saving throw or be knocked prone."

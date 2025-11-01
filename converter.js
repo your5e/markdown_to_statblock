@@ -42,6 +42,8 @@ function convert_markdown_to_yaml(markdown) {
         return '';
     }
 
+    markdown = markdown.replace(/\u00A0/g, ' ');
+
     try {
         const monster = parse_markdown(markdown);
         return generate_yaml(monster);
@@ -359,6 +361,8 @@ function parse_markdown(markdown) {
                 monster.traits = [];
             } else if (current_section === 'actions') {
                 monster.actions = [];
+            } else if (current_section === 'bonus actions') {
+                monster.bonus_actions = [];
             } else if (current_section === 'reactions') {
                 monster.reactions = [];
             } else if (current_section === 'legendary actions') {
@@ -382,6 +386,8 @@ function parse_markdown(markdown) {
                     }
                 } else if (current_section === 'actions') {
                     monster.actions.push(entry);
+                } else if (current_section === 'bonus actions') {
+                    monster.bonus_actions.push(entry);
                 } else if (current_section === 'reactions') {
                     monster.reactions.push(entry);
                 } else if (current_section === 'legendary actions') {
@@ -449,6 +455,9 @@ function parse_ability_entry(line) {
     }
     if (!name_match) {
         name_match = line.match(/^\*\*\*([^*]+)\.\*\*\*\s*([\s\S]+)$/);
+    }
+    if (!name_match) {
+        name_match = line.match(/^\*\*\*([^*]+)\*\*\*\.\s*([\s\S]+)$/);
     }
     if (!name_match) return null;
 

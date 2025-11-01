@@ -1,0 +1,43 @@
+name: Chubacabra
+size: Small
+type: monstrosity
+subtype: Cryptid
+alignment: chaotic evil
+ac: 13
+hp: 13
+hit_dice: "2d6 + 2"
+speed: "40 ft., climb 40 ft."
+stats: [15, 16, 15, 2, 8, 5]
+saves:
+  - constitution: 3
+skillsaves:
+  - perception: 5
+  - stealth: 5
+damage_resistances: lightning, cold, necrotic, poison
+damage_immunities: bludgeoning, piercing, and slashing; charmed, exhaustion, frightened, poisoned
+senses: Blindsight 60 ft., (blind beyond this range) Passive Perception 15
+languages: Telepathy 240 ft., (cryptids only)
+cr: "1"
+bestiary: true
+traits:
+  - name: Pack Tactics
+    desc: The chubacabra has Advantage on attack rolls against a creature if at least one of the chubacabra’s allies is within 5 feet of the creature and the ally doesn’t have the Incapacitated condition.
+    attack_bonus: 0
+actions:
+  - name: Multiattack
+    desc: The Chubacabra can make two bite attacks, or replace either bite with Blood Drain.
+    attack_bonus: 0
+  - name: Bite
+    desc: "Melee Attack Roll: +5, reach 5 ft. Hit: 5 (1d6 + 2) piercing damage. If the target is a Medium or smaller creature, it becomes Prone and Grappled."
+    attack_bonus: 5
+    damage_dice: "1d6"
+    damage_bonus: 2
+  - name: Blood Drain
+    desc: "Constitution Saving Throw: DC 11, one creature that is Grappled by the chubacabra’s bite. Failure: 18 (4d10) Necrotic damage. Success: Half damage."
+    attack_bonus: 0
+    damage_dice: "4d10"
+reactions:
+  - name: Ephemeral
+    desc: "Trigger: The cryptid is takes damage from an attack while in Dim Light or Darkness. Response: The cryptid can reduce the damage by 11 (2d10) and teleports to a point it can see within 30 feet."
+    attack_bonus: 0
+    damage_dice: "2d10"
