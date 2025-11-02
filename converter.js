@@ -9,18 +9,23 @@ if (
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
         const input_el = document.getElementById('markdown');
+        const source_el = document.getElementById('source');
         const output_el = document.getElementById('yaml');
         const copy_button = document.getElementById('copy-yaml');
 
         let debounce_timer;
-        input_el.addEventListener('input', () => {
+        const update_output = () => {
             clearTimeout(debounce_timer);
             debounce_timer = setTimeout(() => {
                 const markdown = input_el.value;
-                const yaml = convert_markdown_to_yaml(markdown);
+                const source = source_el.value;
+                const yaml = convert_markdown_to_yaml(markdown, source);
                 output_el.value = yaml;
             }, 1000);
-        });
+        };
+
+        input_el.addEventListener('input', update_output);
+        source_el.addEventListener('input', update_output);
 
         copy_button.addEventListener('click', () => {
             const yaml = output_el.value;
@@ -37,7 +42,7 @@ if (typeof document !== 'undefined') {
     });
 }
 
-function convert_markdown_to_yaml(markdown) {
+function convert_markdown_to_yaml(markdown, source) {
     if (!markdown.trim()) {
         return '';
     }
@@ -46,6 +51,9 @@ function convert_markdown_to_yaml(markdown) {
 
     try {
         const monster = parse_markdown(markdown);
+        if (source && source.trim()) {
+            monster.source = source.trim();
+        }
         return generate_yaml(monster);
     } catch (error) {
         return `Error: ${error.message}`;

@@ -65,6 +65,7 @@ function generate_spellcasting_yaml(key, spellcasting) {
 function generate_yaml(monster) {
     let yaml = '';
 
+    if (monster.source) yaml += `source: ${monster.source}\n`;
     if (monster.name) yaml += `name: ${monster.name}\n`;
     if (monster.size) yaml += `size: ${monster.size}\n`;
     if (monster.type) yaml += `type: ${monster.type}\n`;

@@ -50,6 +50,15 @@
       }
     }
 
+    input[type='text'] {
+      width: 100%;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
     textarea {
       flex: 1;
       width: 100%;
@@ -74,6 +83,8 @@
 
   <main>
     <div id='input'>
+      <label for='source'>Source:</label>
+      <input type='text' id='source' placeholder='e.g. SRD 5.1, Monster Manual'>
       <label for='markdown'>Markdown Input:</label>
       <textarea id='markdown' placeholder='Paste markdown statblock here...'></textarea>
     </div>
