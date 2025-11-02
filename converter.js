@@ -51,7 +51,7 @@ function convert_markdown_to_yaml(markdown, source) {
 
     try {
         const monster = parse_markdown(markdown);
-        if (source && source.trim()) {
+        if (source && source.trim() && !monster.source) {
             monster.source = source.trim();
         }
         return generate_yaml(monster);
@@ -256,28 +256,37 @@ function parse_markdown(markdown) {
         }
 
         else if (line.match(/^\*\*[A-Z]/) && !current_section) {
-            const match = line.match(/^\*\*([^*]+)\*\*\s+(.+)$/);
+            const match = line.match(/^\*\*([^*]+):\*\*\s+(.+)$/);
             if (match) {
                 const key = match[1];
-                const value = process_wikilinks(match[2]);
-                if (key === 'AC') {
-                    parse_list_item('Armor Class', value, monster);
-                } else if (key === 'HP') {
-                    parse_list_item('Hit Points', value, monster);
-                } else if (key === 'Speed') {
-                    parse_list_item('Speed', value, monster);
-                } else if (key === 'Skills') {
-                    parse_list_item('Skills', value, monster);
-                } else if (key === 'Resistances') {
-                    parse_list_item('Resistances', value, monster);
-                } else if (key === 'Immunities') {
-                    parse_list_item('Immunities', value, monster);
-                } else if (key === 'Senses') {
-                    parse_list_item('Senses', value, monster);
-                } else if (key === 'Languages') {
-                    parse_list_item('Languages', value, monster);
-                } else if (key === 'CR') {
-                    parse_list_item('Challenge', value, monster);
+                const value = match[2].trim();
+                if (key === 'Source') {
+                    monster.source = value;
+                }
+            } else {
+                const match2 = line.match(/^\*\*([^*]+)\*\*\s+(.+)$/);
+                if (match2) {
+                    const key = match2[1];
+                    const value = process_wikilinks(match2[2]);
+                    if (key === 'AC') {
+                        parse_list_item('Armor Class', value, monster);
+                    } else if (key === 'HP') {
+                        parse_list_item('Hit Points', value, monster);
+                    } else if (key === 'Speed') {
+                        parse_list_item('Speed', value, monster);
+                    } else if (key === 'Skills') {
+                        parse_list_item('Skills', value, monster);
+                    } else if (key === 'Resistances') {
+                        parse_list_item('Resistances', value, monster);
+                    } else if (key === 'Immunities') {
+                        parse_list_item('Immunities', value, monster);
+                    } else if (key === 'Senses') {
+                        parse_list_item('Senses', value, monster);
+                    } else if (key === 'Languages') {
+                        parse_list_item('Languages', value, monster);
+                    } else if (key === 'CR') {
+                        parse_list_item('Challenge', value, monster);
+                    }
                 }
             }
         }
@@ -375,6 +384,8 @@ function parse_markdown(markdown) {
                 monster.reactions = [];
             } else if (current_section === 'legendary actions') {
                 monster.legendary_actions = [];
+            } else if (current_section === 'mythic actions') {
+                monster.mythic_actions = [];
             }
         }
 
@@ -400,6 +411,8 @@ function parse_markdown(markdown) {
                     monster.reactions.push(entry);
                 } else if (current_section === 'legendary actions') {
                     monster.legendary_actions.push(entry);
+                } else if (current_section === 'mythic actions') {
+                    monster.mythic_actions.push(entry);
                 }
             }
             i = result.nextIndex - 1;
@@ -466,6 +479,9 @@ function parse_ability_entry(line) {
     }
     if (!name_match) {
         name_match = line.match(/^\*\*\*([^*]+)\*\*\*\.\s*([\s\S]+)$/);
+    }
+    if (!name_match) {
+        name_match = line.match(/^\*\*\*([^.]+\.[^*]*)\*\*\*\s+([\s\S]+)$/);
     }
     if (!name_match) return null;
 

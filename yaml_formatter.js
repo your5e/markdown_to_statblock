@@ -104,6 +104,7 @@ function generate_yaml(monster) {
     yaml += generate_abilities_yaml('bonus_actions', monster.bonus_actions);
     yaml += generate_abilities_yaml('reactions', monster.reactions);
     yaml += generate_abilities_yaml('legendary_actions', monster.legendary_actions);
+    yaml += generate_abilities_yaml('mythic_actions', monster.mythic_actions);
     yaml += generate_spellcasting_yaml('spells', monster.spells);
 
     return yaml;
